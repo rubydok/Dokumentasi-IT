@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#F2C94C">
+  
+  <title>GAS Dokumenter</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background-color: #F2C94C; }
+    
+    #splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Lebar penuh layar */
+  height: 100vh; /* Tinggi penuh layar */
+  
+  /* Ganti dengan nama file baru kamu */
+  background-image: url('background-baru.svg'); 
+  
+  background-repeat: no-repeat;
+  background-position: center center;
+  
+  /* INI KUNCINYA UNTUK PAKSA STRETCH */
+  background-size: 100% 100% !important; 
+  
+  /* Tambahan untuk memastikan tidak ada sisa ruang di browser mobile */
+  object-fit: fill; 
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+    .brand-wrapper { display: flex; align-items: center; gap: 12px; z-index: 10; margin-top: -30px; }
+    .logo-container { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+    
+    /* Ikon Ruby Bulat */
+    #hati-logo { width: 54px; z-index: 2; pointer-events: none; }
+
+    .svg-loader { position: absolute; width: 64px; height: 64px; transform: rotate(-90deg); z-index: 3; }
+    .circle-draw {
+      fill: none; stroke: #FFFFFF; stroke-width: 3.2; stroke-linecap: round;
+      stroke-dasharray: 195; stroke-dashoffset: 195;
+      animation: draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+      animation-delay: 0.3s;
+    }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    /* Teks Ruby */
+    #ruby-text { height: 54px; object-fit: contain; pointer-events: none; }
+
+    .footer-text {
+      position: absolute; bottom: 65px; width: 85%; text-align: center;
+      color: white; font-size: 8px; line-height: 1.5; opacity: 0.9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    #app-frame { 
+      position: fixed; top: 0; left: 0; border: none; width: 100%; height: 100%; 
+      opacity: 0; z-index: 1; transition: opacity 0.8s ease; 
+    }
+    
+    .visible { opacity: 1 !important; }
+    .hidden { opacity: 0 !important; visibility: hidden !important; }
+  </style>
+</head>
+<body>
+
+  <div id="splash-screen">
+    <div class="brand-wrapper">
+      <div class="logo-container">
+        <svg class="svg-loader" viewBox="0 0 64 64">
+          <circle class="circle-draw" cx="32" cy="32" r="31" />
+        </svg>
+        <img id="hati-logo" src="ruby-bulat.svg" alt="Logo">
+      </div>
+      <img id="ruby-text" src="ruby-text.svg" alt="Ruby">
+    </div>
+    
+    <div class="footer-text">
+      Dibuat untuk mempermudah dan mempersingkat segalanya<br>
+      agar bisa mencari dan menemukan tujuan hidup yang berarti
+    </div>
+  </div>
+
+  <iframe 
+    id="app-frame" 
+    src="https://script.google.com/macros/s/AKfycbz8raUdPBcn6SStFRJxTZ1XfHHZ5OTjgMoskHI_283DZMVE0-jy2POVx57YAgGko4DG/exec"
+    allow="geolocation; microphone; camera; clipboard-write;"
+  ></iframe>
+
+  <script>
+    const frame = document.getElementById('app-frame');
+    const splash = document.getElementById('splash-screen');
+
+    // Mendaftarkan Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+
+    function finishSplash() {
+      frame.classList.add('visible');
+      setTimeout(() => {
+        splash.classList.add('hidden');
+      }, 300);
+    }
+
+    frame.onload = () => {
+      setTimeout(finishSplash, 2300);
+    };
+
+    setTimeout(() => {
+      if (!frame.classList.contains('visible')) {
+        finishSplash();
+      }
+    }, 8000);
+  </script>
+</body>
+</html>
